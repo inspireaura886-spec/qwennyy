@@ -1,0 +1,128 @@
+name: job
+run-name: job ${{ inputs.mode }}
+# Qwen3-TTS on CPU. mode=render: clone voices/<speaker>/ref.wav for every line of jobs/<name>.json.
+# mode=design: VoiceDesign 1.7B builds voices/<id>/ref.wav from voices/voices.json (ids in `only`, comma list).
+# At most 2 synth jobs run at once (max-parallel 2); the local helper also waits for any other tts run to finish first.
+on:
+  workflow_dispatch:
+    inputs:
+      name: {required: true, description: 'job name; render reads jobs/<name>.json'}
+      mode: {default: 'render', description: 'render | design | qa (qa: jobs/<name>.json is [[wav, text], ...] of repo files)'}
+      model: {default: '1.7B', description: 'clone model for render: 1.7B | 0.6B (design always uses 1.7B-VoiceDesign)'}
+      parts: {default: '2', description: 'shards (1-2)'}
+      only: {default: '', description: 'design: comma list of voice ids (empty = all)'}
+      takes: {default: '1', description: 'design: takes per voice'}
+permissions:
+  contents: read
+env:
+  QWEN_MODELS: /home/runner/qwen_models
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      mid: ${{ steps.m.outputs.mid }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          python3 - >> $GITHUB_OUTPUT <<'PY'
+          import json
+          mode='${{ inputs.mode }}'; P=max(1,min(2,int('${{ inputs.parts }}' or 2)))
+          if mode=='design':
+              ids=[x for x in json.load(open('voices/voices.json'))]
+              only=[x.strip() for x in '${{ inputs.only }}'.split(',') if x.strip()]
+              ids=[i for i in ids if not only or i in only]; P=min(P,len(ids))
+              inc=[{'i':k,'only':','.join(ids[k::P])} for k in range(P)]
+              mid='Qwen3-TTS-12Hz-1.7B-VoiceDesign'
+          elif mode=='qa':
+              inc=[{'i':0,'only':''}]; mid='none'
+          else:
+              n=len(json.load(open('jobs/${{ inputs.name }}.json'))['lines']); P=min(P,n)
+              inc=[{'i':k,'only':''} for k in range(P)]
+              mid={'1.7B':'Qwen3-TTS-12Hz-1.7B-Base','0.6B':'Qwen3-TTS-12Hz-0.6B-Base'}['${{ inputs.model }}']
+          print('matrix='+json.dumps({'include':inc}))
+          print('mid='+mid)
+          PY
+  synth:
+    needs: plan
+    if: inputs.mode != 'qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: true
+      max-parallel: 2
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache@v4
+        with: {path: ~/.cache/pip, key: 'pip-qwen-tts-0.1.1-torchcpu-v1'}
+      - name: install (torch CPU + qwen-tts)
+        run: |
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q qwen-tts==0.1.1 huggingface_hub
+          python -c "import torch,transformers;print('torch',torch.__version__,'transformers',transformers.__version__,'threads',torch.get_num_threads())"
+      - name: model cache
+        uses: actions/cache@v4
+        with: {path: '/home/runner/qwen_models/${{ needs.plan.outputs.mid }}', key: 'qwen-${{ needs.plan.outputs.mid }}-v1'}
+      - name: fetch weights (cache miss only)
+        run: |
+          python - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          mid='${{ needs.plan.outputs.mid }}'; d='/home/runner/qwen_models/'+mid
+          if not os.path.exists(d+'/model.safetensors'): snapshot_download('Qwen/'+mid, local_dir=d)
+          PY
+          rm -rf /home/runner/qwen_models/*/.cache
+          du -sh /home/runner/qwen_models/*
+      - name: synth
+        run: |
+          if [ "${{ inputs.mode }}" = "design" ]; then
+            python tts.py design --only "${{ matrix.only }}" --takes ${{ inputs.takes }} --out out
+          else
+            python tts.py render --job jobs/${{ inputs.name }}.json --shard ${{ matrix.i }} --nshards ${{ strategy.job-total }} --model ${{ inputs.model }} --out out
+          fi
+      - uses: actions/upload-artifact@v4
+        with: {name: 'part-${{ matrix.i }}', path: out, retention-days: 3}
+  join:
+    needs: synth
+    if: ${{ !cancelled() && !failure() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache@v4
+        with: {path: ~/.cache/pip, key: 'pip-qa-v1'}
+      - uses: actions/cache@v4
+        with: {path: ~/.cache/huggingface, key: 'whisper-small.en-v1'}
+      - uses: actions/download-artifact@v4
+        if: inputs.mode != 'qa'
+        with: {pattern: 'part-*', path: parts}
+      - run: pip install -q numpy soundfile librosa pyloudnorm faster-whisper
+      - name: join + listen-check + master (-14 LUFS)
+        run: |
+          mkdir -p final
+          if [ "${{ inputs.mode }}" = "design" ]; then
+            cp -r parts/*/* final/ && rm -f final/design_stats.json
+            python3 -c "import json,glob;s=sum([json.load(open(f)) for f in glob.glob('parts/*/design_stats.json')],[]);json.dump(s,open('final/design_stats.json','w'),indent=1)"
+            python3 -c "import json,glob,os;json.dump([[f,open(os.path.dirname(f)+'/ref.txt').read().strip()] for f in sorted(glob.glob('final/*/ref.wav'))],open('qa_list.json','w'))"
+          elif [ "${{ inputs.mode }}" = "qa" ]; then
+            cp jobs/${{ inputs.name }}.json qa_list.json
+          else
+            python tts.py join --job jobs/${{ inputs.name }}.json --parts parts --out final
+            python3 -c "
+          import json
+          s=json.load(open('final/stats.json'))
+          L=[['final/lines/'+p['file'],p['text']] for p in s['per_line']]+[['final/joined.wav',' '.join(p['text'] for p in s['per_line'])]]
+          json.dump(L,open('qa_list.json','w'))"
+          fi
+          python qa.py --list qa_list.json --out final/qa.json --master final/mastered
+      - uses: actions/upload-artifact@v4
+        with: {name: 'tts', path: final, retention-days: 7}
