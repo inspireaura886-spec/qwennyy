@@ -1,0 +1,24 @@
+{
+ "language": "English",
+ "seed": 1234,
+ "lines": [
+  {
+   "speaker": "d",
+   "seed": 41,
+   "pause": 0.3,
+   "text": "On a clear afternoon, two pilots watched a small white object drop fifty thousand feet in under a second."
+  },
+  {
+   "speaker": "e",
+   "seed": 51,
+   "pause": 0.3,
+   "text": "It had no wings, no exhaust and no sound. Then it was simply gone."
+  },
+  {
+   "speaker": "d",
+   "seed": 41,
+   "pause": 0.0,
+   "text": "Nobody explained it."
+  }
+ ]
+}
