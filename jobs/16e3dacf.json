@@ -1,0 +1,46 @@
+{
+ "language": "English",
+ "seed": 1234,
+ "lines": [
+  {
+   "speaker": "d",
+   "text": "Seven unknown blips crossed the White House on radar. And the radar was working.",
+   "pause": 0.18
+  },
+  {
+   "speaker": "d",
+   "text": "An airline pilot saw lights right where the blips were.",
+   "pause": 0.18
+  },
+  {
+   "speaker": "d",
+   "text": "The Air Force sent fighter jets. Every blip vanished.",
+   "pause": 0.15
+  },
+  {
+   "speaker": "d",
+   "text": "The jets left. The blips came back.",
+   "pause": 0.2
+  },
+  {
+   "speaker": "d",
+   "text": "Three radars tracked one target. It vanished from all three at once.",
+   "pause": 0.2
+  },
+  {
+   "speaker": "d",
+   "text": "The Pentagon's biggest press conference since World War Two blamed warm air bending the radar.",
+   "pause": 0.15
+  },
+  {
+   "speaker": "d",
+   "text": "A Navy radar specialist said it was too weak.",
+   "pause": 0.2
+  },
+  {
+   "speaker": "d",
+   "text": "And still, nobody explained it.",
+   "pause": 0.0
+  }
+ ]
+}
