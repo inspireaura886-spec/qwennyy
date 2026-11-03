@@ -1,0 +1,90 @@
+{
+ "language": "English",
+ "seed": 41,
+ "lines": [
+  {
+   "speaker": "d",
+   "text": "A seven hundred twenty nine foot freighter vanished from radar, ten minutes after one calm radio call.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "We are holding our own.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "No May-day. Twenty nine men, gone.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "Hours earlier, the captain reported both radars dead, and heavy seas over the deck.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "The Navy found it five hundred thirty feet down in Lake Superior. Torn in two. The stern, upside down.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "The Coast Guard blamed the hatch covers. Others blamed a shoal, or three rogue waves.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "d",
+   "text": "Nobody ever proved which. Or why that last call sounded so calm.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "e",
+   "text": "A seven hundred twenty nine foot freighter vanished from radar, ten minutes after one calm radio call.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "We are holding our own.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "No May-day. Twenty nine men, gone.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "Hours earlier, the captain reported both radars dead, and heavy seas over the deck.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "The Navy found it five hundred thirty feet down in Lake Superior. Torn in two. The stern, upside down.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "The Coast Guard blamed the hatch covers. Others blamed a shoal, or three rogue waves.",
+   "pause": 0.22,
+   "seed": 51
+  },
+  {
+   "speaker": "e",
+   "text": "Nobody ever proved which. Or why that last call sounded so calm.",
+   "pause": 0.22,
+   "seed": 51
+  }
+ ]
+}
