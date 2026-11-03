@@ -1,0 +1,51 @@
+{
+ "language": "English",
+ "seed": 1234,
+ "lines": [
+  {
+   "speaker": "d",
+   "text": "Seven unknown objects crossed restricted airspace over the White House, on three working radars.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "July 1952. Controller Edward Nugent, Washington National Airport, tracks seven targets fifteen miles out. No known aircraft nearby.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "Technicians check his radar. It works. Pilot Casey Pierman sees lights matching the blips.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "Then two Air Force fighters head for Washington, and every blip vanishes. When the jets leave, they return.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "Two airport radars and Andrews Air Force Base all track the same target. It disappears from all three at once.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "President Truman's aide phones the Air Force. Then comes the biggest Pentagon press conference since the Second World War.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "The official answer: temperature inversions bent the radar.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "But Navy radar specialist Lieutenant Holcomb was in the room, and judged the inversion too weak.",
+   "pause": 0.25
+  },
+  {
+   "speaker": "d",
+   "text": "So were they a temperature inversion, or solid objects over the White House?",
+   "pause": 0.25
+  }
+ ]
+}
