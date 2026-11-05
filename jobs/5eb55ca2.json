@@ -1,0 +1,18 @@
+{
+ "language": "English",
+ "seed": 41,
+ "lines": [
+  {
+   "speaker": "d",
+   "text": "Their bodies were never found. Nobody explained it.",
+   "pause": 0.22,
+   "seed": 41
+  },
+  {
+   "speaker": "e",
+   "text": "Eight white rockets. A radio switched off. Nobody explained it.",
+   "pause": 0.22,
+   "seed": 51
+  }
+ ]
+}
